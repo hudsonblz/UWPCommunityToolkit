@@ -51,6 +51,7 @@
     <Compile Include="Core\DataProviderBase{TConfig,TSchema}.cs" />
     <Compile Include="Core\ExtensionMethods.cs" />
     <Compile Include="Core\IDataService{T,U,V}.cs" />
+    <Compile Include="Services\Bing\BingLanguage.cs" />
     <Compile Include="Services\Bing\BingCountry.cs" />
     <Compile Include="Services\Bing\BingResult.cs" />
     <Compile Include="Services\Bing\BingQueryType.cs" />
@@ -58,9 +59,40 @@
     <Compile Include="Services\Bing\BingDataProvider.cs" />
     <Compile Include="Services\Bing\BingParser.cs" />
     <Compile Include="Services\Bing\BingService.cs" />
+    <Compile Include="Services\Facebook\FacebookAlbum.cs" />
     <Compile Include="Services\Facebook\FacebookOAuthTokens.cs" />
+    <Compile Include="Services\Facebook\FacebookRequestSource.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInConstants.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInContent.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInDataConfig.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInDataProvider.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInOAuthTokens.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInParser.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInPermissions.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInProfile.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInProfileRequest.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInService.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInShareResponse.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInShareVisibility.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInShareRequest.cs" />
+    <Compile Include="Services\LinkedIn\LinkedInVisibility.cs" />
+    <Compile Include="Services\MicrosoftGraph\MicrosoftGraphAuthenticationHelper.cs" />
+    <Compile Include="Services\MicrosoftGraph\MicrosoftGraphHelper.cs" />
+    <Compile Include="Services\MicrosoftGraph\MicrosoftGraphCoreService.cs" />
+    <Compile Include="Services\MicrosoftGraph\MicrosoftGraphExtensions.cs" />
+    <Compile Include="Services\MicrosoftGraph\Message\MicrosoftGraphMessageFields.cs" />
+    <Compile Include="Services\MicrosoftGraph\Message\MicrosoftGraphServiceMessage.cs" />
+    <Compile Include="Services\MicrosoftGraph\User\MicrosoftGraphUserFields.cs" />
+    <Compile Include="Services\MicrosoftGraph\User\MicrosoftGraphUserService.cs" />
+    <Compile Include="Services\Facebook\FacebookPhoto.cs" />
+    <Compile Include="Services\Facebook\FacebookPictureData.cs" />
+    <Compile Include="Services\Facebook\FacebookPlatformImageSource.cs" />
+    <Compile Include="Services\MicrosoftTranslator\AzureAuthToken.cs" />
+    <Compile Include="Services\MicrosoftTranslator\ITranslatorServiceClient.cs" />
+    <Compile Include="Services\MicrosoftTranslator\TranslatorServiceClient.cs" />
     <Compile Include="Services\Twitter\TwitterErrors.cs" />
     <Compile Include="Services\Twitter\TwitterException.cs" />
+    <Compile Include="Services\Twitter\TwitterGeoData.cs" />
     <Compile Include="Services\Twitter\TwitterOAuthTokenType.cs" />
     <Compile Include="Services\Facebook\FacebookPermissions.cs" />
     <Compile Include="Services\Facebook\FacebookDataHost.cs" />
@@ -80,10 +112,7 @@
     <Compile Include="Exceptions\TooManyRequestsException.cs" />
     <Compile Include="Exceptions\UserNotFoundException.cs" />
     <Compile Include="Services\Facebook\FacebookDataConfig.cs" />
-    <Compile Include="Core\HttpRequestResult.cs" />
-    <Compile Include="Core\HttpRequestSettings.cs" />
     <Compile Include="Core\IParser.cs" />
-    <Compile Include="Core\HttpRequest.cs" />
     <Compile Include="Rss\AtomParser.cs" />
     <Compile Include="Rss\BaseRssParser.cs" />
     <Compile Include="Rss\Rss2Parser.cs" />
@@ -108,6 +137,7 @@
     <Compile Include="Services\Twitter\TwitterSearchResult.cs" />
     <Compile Include="Services\Twitter\Tweet.cs" />
     <Compile Include="Services\Twitter\TwitterError.cs" />
+    <Compile Include="Services\Twitter\TwitterStatus.cs" />
     <Compile Include="Services\Twitter\TwitterUser.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +145,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Microsoft.Toolkit.Uwp.Services.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Toolkit.Uwp\Microsoft.Toolkit.Uwp.csproj">
+      <Project>{805F80DF-75C6-4C2F-8FD9-B47F6D0DF5A3}</Project>
+      <Name>Microsoft.Toolkit.Uwp</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
@@ -159,6 +195,18 @@
     <OutputPath>bin\Release %28Anniversary Update%29\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <DocumentationFile>bin\Release\Microsoft.Windows.Toolkit.Services.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>microsoft.toolkit.uwp.services.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Publish|AnyCPU'">
+    <OutputPath>bin\Publish\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <DocumentationFile>bin\Release\Microsoft.Toolkit.Uwp.Services.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <NoStdLib>true</NoStdLib>
     <DebugType>pdbonly</DebugType>

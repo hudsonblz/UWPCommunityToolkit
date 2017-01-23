@@ -10,11 +10,8 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-using System;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
@@ -44,16 +41,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             new PropertyMetadata(default(Stretch)));
 
         /// <summary>
-        /// Identifies the <see cref="PlaceholderAnimationDuration"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty PlaceholderAnimationDurationProperty =
-            DependencyProperty.Register(
-                nameof(PlaceholderAnimationDuration),
-                typeof(Duration),
-                typeof(ImageEx),
-                new PropertyMetadata(TimeSpan.Zero));
-
-        /// <summary>
         /// Gets or sets the placeholder source.
         /// </summary>
         /// <value>
@@ -75,18 +62,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get { return (Stretch)GetValue(PlaceholderStretchProperty); }
             set { SetValue(PlaceholderStretchProperty, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the placeholder animation duration.
-        /// </summary>
-        /// <value>
-        /// The placeholder animation duration.
-        /// </value>
-        public Duration PlaceholderAnimationDuration
-        {
-            get { return (Duration)GetValue(PlaceholderAnimationDurationProperty); }
-            set { SetValue(PlaceholderAnimationDurationProperty, value); }
         }
     }
 }

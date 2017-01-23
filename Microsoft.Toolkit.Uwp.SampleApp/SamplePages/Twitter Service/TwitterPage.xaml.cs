@@ -11,8 +11,9 @@
 // ******************************************************************
 
 using System;
-using System.Threading.Tasks;
+using System.Globalization;
 using Microsoft.Toolkit.Uwp.Services.Twitter;
+using Windows.Devices.Geolocation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Popups;
@@ -34,7 +35,7 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.SamplePages
 
         private async void ConnectButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!await Tools.CheckInternetConnection())
+            if (!await Tools.CheckInternetConnectionAsync())
             {
                 return;
             }
@@ -64,7 +65,25 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.SamplePages
             ShowSearchPanel();
             ShowTweetPanel();
 
-            var user = await TwitterService.Instance.GetUserAsync();
+            TwitterUser user;
+            try
+            {
+                user = await TwitterService.Instance.GetUserAsync();
+            }
+            catch (TwitterException ex)
+            {
+                if ((ex.Errors?.Errors?.Length > 0) && (ex.Errors.Errors[0].Code == 89))
+                {
+                    await new MessageDialog("Invalid or expired token. Logging out. Re-connect for new token.").ShowAsync();
+                    TwitterService.Instance.Logout();
+                    return;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
+
             ProfileImage.DataContext = user;
             ProfileImage.Visibility = Visibility.Visible;
 
@@ -73,21 +92,48 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.SamplePages
             Shell.Current.DisplayWaitRing = false;
         }
 
+        private async void GetLocation_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var geolocator = new Geolocator();
+
+                var position = await geolocator.GetGeopositionAsync();
+
+                var pos = position.Coordinate.Point.Position;
+
+                Latitude.Text = pos.Latitude.ToString(CultureInfo.InvariantCulture);
+                Longitude.Text = pos.Longitude.ToString(CultureInfo.InvariantCulture);
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog($"An error occured finding your location. Message: {ex.Message}").ShowAsync();
+            }
+        }
+
         private async void ShareButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!await Tools.CheckInternetConnection())
+            if (!await Tools.CheckInternetConnectionAsync())
             {
                 return;
             }
 
+            var status = new TwitterStatus
+            {
+                DisplayCoordinates = DisplayCoordinates.IsChecked == true,
+                Message = TweetText.Text,
+                Latitude = string.IsNullOrEmpty(Latitude.Text) ? (double?)null : Convert.ToDouble(Latitude.Text),
+                Longitude = string.IsNullOrEmpty(Longitude.Text) ? (double?)null : Convert.ToDouble(Longitude.Text)
+            };
+
             Shell.Current.DisplayWaitRing = true;
-            await TwitterService.Instance.TweetStatusAsync(TweetText.Text);
+            await TwitterService.Instance.TweetStatusAsync(status);
             Shell.Current.DisplayWaitRing = false;
         }
 
         private async void SearchButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!await Tools.CheckInternetConnection())
+            if (!await Tools.CheckInternetConnectionAsync())
             {
                 return;
             }
@@ -99,7 +145,7 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.SamplePages
 
         private async void SharePictureButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!await Tools.CheckInternetConnection())
+            if (!await Tools.CheckInternetConnectionAsync())
             {
                 return;
             }

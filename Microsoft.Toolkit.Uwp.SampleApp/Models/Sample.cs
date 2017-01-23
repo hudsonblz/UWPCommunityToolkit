@@ -9,6 +9,7 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,15 +18,24 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 using Microsoft.Toolkit.Uwp.SampleApp.Models;
-
+using Microsoft.Toolkit.Uwp.UI.Controls;
+using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
 
 namespace Microsoft.Toolkit.Uwp.SampleApp
 {
     public class Sample
     {
+        internal static async Task<Sample> FindAsync(string category, string name)
+        {
+            var categories = await Samples.GetCategoriesAsync();
+            return categories?
+                .FirstOrDefault(c => c.Name.Equals(category, StringComparison.OrdinalIgnoreCase))?
+                .Samples
+                .FirstOrDefault(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+
         private PropertyDescriptor _propertyDescriptor;
 
         public string Name { get; set; }
@@ -38,19 +48,48 @@ namespace Microsoft.Toolkit.Uwp.SampleApp
 
         public string CodeFile { get; set; }
 
+        public string JavaScriptCodeFile { get; set; }
+
         public string XamlCodeFile { get; set; }
 
         public string XamlCode { get; private set; }
 
         public string Icon { get; set; }
 
+        public string BadgeUpdateVersionRequired { get; set; }
+
+        public string ApiCheck { get; set; }
+
         public bool HasXAMLCode => !string.IsNullOrEmpty(XamlCodeFile);
 
         public bool HasCSharpCode => !string.IsNullOrEmpty(CodeFile);
 
-        public async Task<string> GetCSharpSource()
+        public bool HasJavaScriptCode => !string.IsNullOrEmpty(JavaScriptCodeFile);
+
+        public bool IsSupported
+        {
+            get
+            {
+                if (ApiCheck == null)
+                {
+                    return true;
+                }
+
+                return ApiInformation.IsTypePresent(ApiCheck);
+            }
+        }
+
+        public async Task<string> GetCSharpSourceAsync()
         {
             using (var codeStream = await StreamHelper.GetPackagedFileStreamAsync($"SamplePages/{Name}/{CodeFile}"))
+            {
+                return await codeStream.ReadTextAsync();
+            }
+        }
+
+        public async Task<string> GetJavaScriptSourceAsync()
+        {
+            using (var codeStream = await StreamHelper.GetPackagedFileStreamAsync($"SamplePages/{Name}/{JavaScriptCodeFile}"))
             {
                 return await codeStream.ReadTextAsync();
             }
@@ -206,6 +245,18 @@ namespace Microsoft.Toolkit.Uwp.SampleApp
             // Search in Windows
             var proxyType = VerticalAlignment.Center;
             var assembly = proxyType.GetType().GetTypeInfo().Assembly;
+
+            foreach (var typeInfo in assembly.ExportedTypes)
+            {
+                if (typeInfo.Name == typeName)
+                {
+                    return typeInfo;
+                }
+            }
+
+            // Search in Microsoft.Toolkit.Uwp.UI.Controls
+            var controlsProxyType = GridSplitter.GridResizeDirection.Auto;
+            assembly = controlsProxyType.GetType().GetTypeInfo().Assembly;
 
             foreach (var typeInfo in assembly.ExportedTypes)
             {
